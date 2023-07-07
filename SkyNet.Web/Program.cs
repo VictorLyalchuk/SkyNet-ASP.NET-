@@ -1,4 +1,5 @@
 using SkyNet.Infrastructure;
+using SkyNet.Infrastructure.Initizalizers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,10 +8,12 @@ string connection = builder.Configuration.GetConnectionString("DefaulConnection"
 //Database context
 builder.Services.AddDbContext(connection);
 
-
+//Add Infrasturcture servisec
+builder.Services.AddInfrastuctureService();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 
 var app = builder.Build();
 
@@ -32,5 +35,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+await UsersAndRollesInitializer.SeedUsersAndRole(app);
 
 app.Run();
