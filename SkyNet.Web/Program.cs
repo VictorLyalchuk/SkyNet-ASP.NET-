@@ -35,6 +35,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-await UsersAndRollesInitializer.SeedUsersAndRole(app);
+//await UsersAndRollesInitializer.SeedUsersAndRole(app);
 
 app.Run();

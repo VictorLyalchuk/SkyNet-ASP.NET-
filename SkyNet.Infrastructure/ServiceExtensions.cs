@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SkyNet.Core.Entities.User;
 using SkyNet.Infrastructure.Context;
+using SkyNet.Infrastructure.Initizalizers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,5 +42,6 @@ namespace SkyNet.Infrastructure
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
         }
+
     }
 }

@@ -9,45 +9,124 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using SkyNet.Infrastructure.Initizalizers;
+using Microsoft.EntityFrameworkCore;
 
 namespace SkyNet.Infrastructure.Initizalizers
 {
-    public class UsersAndRollesInitializer
+    public static class UsersAndRolesInitializer
     {
-        public static async Task SeedUsersAndRole(IApplicationBuilder applicationBuilder)
+        public static void Seed(this ModelBuilder builder)
         {
-            using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
+            static async Task SeedUsersAndRoles(AppDbContext context, UserManager<AppUser> userManager)
             {
-                var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
-                UserManager<AppUser> userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-
-                if (userManager.FindByEmailAsync("admin@email.com").Result == null)
+                if (!context.Roles.Any())
                 {
-                    AppUser admin = new AppUser()
-                    {
-                        FirstName = "John",
-                        LastName = "Connor",
-                        UserName = "admin@email.com",
-                        Email = "admin@email.com",
-                        EmailConfirmed = true,
-                        PhoneNumber = "+xx(xx)xxx-xx-xx",
-                        PhoneNumberConfirmed = true,
-                    };
-                    context.Roles.AddRangeAsync(
+                    await context.Roles.AddRangeAsync(
                         new IdentityRole()
                         {
                             Name = "administrator",
                             NormalizedName = "ADMINISTRATOR",
                         }
-                        );
+                    );
                     await context.SaveChangesAsync();
-                    IdentityResult adminResult = userManager.CreateAsync(admin, "Qwerty-1").Result;
-                if(adminResult.Succeeded)
+                }
+
+                if (await userManager.FindByEmailAsync("admin@example.com") == null)
+                {
+                    var admin = new AppUser()
                     {
-                        userManager.AddToRoleAsync(admin, "Administrator").Wait();
+                        FirstName = "Victor",
+                        LastName = "Connor",
+                        UserName = "Victor@example.com",
+                        Email = "Victor@example.com",
+                        EmailConfirmed = true,
+                        PhoneNumber = "+xx(xx)xxx-xx-xx",
+                        PhoneNumberConfirmed = true,
+                    };
+
+                    var adminResult = await userManager.CreateAsync(admin, "Qwerty-1");
+                    if (adminResult.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(admin, "administrator");
                     }
                 }
             }
+
+
+
+
+            //AppUser admin = new AppUser()
+            //{
+            //    FirstName = "John",
+            //    LastName = "Connor",
+            //    UserName = "admin@email.com",
+            //    Email = "admin@email.com",
+            //    EmailConfirmed = true,
+            //    PhoneNumber = "+xx(xxx)xxx-xx-xx",
+            //    PhoneNumberConfirmed = true,
+            //};
+
+            //new IdentityRole()
+            //{
+            //    Name = "Administrator",
+            //    NormalizedName = "ADMINISTRATOR"
+            //};
+
+
+
+
+
+
+
+
+            //    var pwd = "P@$$w0rd";
+            //    var passwordHasher = new PasswordHasher<IdentityUser>();
+
+            //    var adminRole = new IdentityRole()
+            //    {
+            //        Name = "administrator",
+            //        NormalizedName = "ADMINISTRATOR",
+            //    };
+
+            //    List<IdentityRole> roles = new List<IdentityRole>() {
+            //    adminRole,
+            //    };
+
+            //    builder.Entity<IdentityRole>().HasData(roles);
+
+            //    var adminUser = new AppUser
+            //    {
+            //        FirstName = "Victor",
+            //        LastName = "Connor",
+            //        UserName = "Victor@example.com",
+            //        Email = "Victor@example.com",
+            //        EmailConfirmed = true,
+            //        PhoneNumber = "+xx(xx)xxx-xx-xx",
+            //        PhoneNumberConfirmed = true,
+            //    };
+            //    adminUser.NormalizedUserName = adminUser.UserName.ToUpper();
+            //    adminUser.NormalizedEmail = adminUser.Email.ToUpper();
+            //    adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, pwd);
+
+            //    List<IdentityUser> users = new List<IdentityUser>() {
+            //        adminUser,
+            //    };
+
+            //    builder.Entity<IdentityUser>().HasData(users);
+
+            //    List<IdentityUserRole<string>> userRoles = new List<IdentityUserRole<string>>();
+
+            //    userRoles.Add(new IdentityUserRole<string>
+            //    {
+            //        UserId = users[0].Id,
+            //        RoleId = roles.First(q => q.Name == "Admin").Id
+            //    });
+
+            //    builder.Entity<IdentityUserRole<string>>().HasData(userRoles);
+            //}
         }
+
+
     }
 }
