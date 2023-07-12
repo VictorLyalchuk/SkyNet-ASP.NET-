@@ -1,3 +1,4 @@
+using SkyNet.Core;
 using SkyNet.Infrastructure;
 using SkyNet.Infrastructure.Initizalizers;
 
@@ -13,6 +14,9 @@ builder.Services.AddInfrastuctureService();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add core services
+builder.Services.AddCoreServices();
 
 
 var app = builder.Build();

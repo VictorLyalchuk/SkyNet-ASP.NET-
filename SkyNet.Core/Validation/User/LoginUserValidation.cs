@@ -14,8 +14,6 @@ namespace SkyNet.Core.Validation.User
         {
             RuleFor(r => r.Email).NotEmpty().WithMessage("Field must not be empty").EmailAddress().WithMessage("Invalid email address");
             RuleFor(r => r.Password).NotEmpty().WithMessage("Field must not be empty").MinimumLength(7).WithMessage("Password must be at least 7 characters").MaximumLength(128);
-
-
         }
     }
 }
