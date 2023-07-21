@@ -5,7 +5,7 @@ using SkyNet.Infrastructure.Initizalizers;
 var builder = WebApplication.CreateBuilder(args);
 
 //Create connection string
-string connection = builder.Configuration.GetConnectionString("DefaulConnection");
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 //Database context
 builder.Services.AddDbContext(connection);
 
@@ -18,6 +18,8 @@ builder.Services.AddControllersWithViews();
 // Add core services
 builder.Services.AddCoreServices();
 
+//Add Mapping 
+builder.Services.AddMapping();
 
 var app = builder.Build();
 
@@ -34,11 +36,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-//await UsersAndRollesInitializer.SeedUsersAndRole(app);
+await UsersAndRolesInitializer.SeedUserAndRole(app);
 
 app.Run();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SkyNet.Core.AutoMapper.User;
 using SkyNet.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,10 @@ namespace SkyNet.Core
         public static void AddCoreServices(this IServiceCollection service)
         {
             service.AddTransient<UserService>();
+        }
+        public static void AddMapping(this IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(AutoMapperUserProfile));
         }
     }
 }

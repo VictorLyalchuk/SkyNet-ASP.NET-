@@ -1,0 +1,170 @@
+﻿@using Microsoft.AspNet.Identity;
+@using SkyNet.Core.Entities.User;
+@using SkyNet.Web.Models.ViewModel;
+@model UpdateProfileVM
+
+
+@*@inject UserManager<AppUser> UserManager;
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var email = await UserManager.GetEmailAsync(user);
+}*@
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Edit Profile</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-action="Index">Home</a></li>
+                        <li class="breadcrumb-item active">Create user</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Edit user</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6 offset-3">
+                            <div class="card card-primary">
+
+                                <div class="card-header">
+                                    <h3 class="card-title">Change User Data</h3>
+                                </div>
+                                <!-- /.card-header -->
+                                <!-- form start -->
+                                @if (@ViewBag.UpdateUserError != null)
+                                {
+                                    <div class="text-danger mt-3 ml-3">@ViewBag.UpdateUserError</div>
+                                }
+                                <form method="post" asp-action="Profile" asp-controller="DashBoard">
+                                    <div class="card-body">
+                                        <input type="hidden" name="UserInfo.ID" asp-for="@Model.UserInfo.ID" />
+                                        <div class="form-group">
+                                            <label for="InputFirstName">FirstName</label>
+                                            <input type="text" class="form-control" name="UserInfo.FirstName" id="InputFirstName" placeholder="FirstName" asp-for="@Model.UserInfo.FirstName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputLastName">LastName</label>
+                                            <input type="text" class="form-control" name="UserInfo.LastName" id="InputLastName" placeholder="LastName" asp-for="@Model.UserInfo.LastName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputPhoneNumber">PhoneNumber</label>
+                                            <input type="text" class="form-control" name="UserInfo.PhoneNumber" id="InputPhoneNumber" placeholder="PhoneNumber" asp-for="@Model.UserInfo.PhoneNumber">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputEmail1">Email address</label>
+                                            <input type="email" class="form-control" name="UserInfo.Email" id="InputEmail1" placeholder="Enter email" asp-for="@Model.UserInfo.Email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputRole">Role</label>
+                                            <input type="text" class="form-control" name="UserInfo.Role" id="InputRole" placeholder="Role" asp-for="@Model.UserInfo.Role" readonly>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                            <label class="form-check-label" for="exampleCheck1">Confirm</label>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary" id="submitButton" disabled>Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="card card-primary">
+                                <div class="card-header bg-danger">
+                                    <h3 class="card-title">Change Email Data</h3>
+                                </div>
+                                @if (@ViewBag.UpdatePasswordError != null)
+                                {
+                                    <div class="text-danger mt-3 ml-3">@ViewBag.UpdatePasswordError</div>
+                                }
+                                <form method="post" asp-action="Profile" asp-controller="DashBoard">
+                                    <div class="card-body">
+                                        <input type="hidden" name="UserPassword.ID" asp-for="@Model.UserPassword.ID" />
+                                        <div class="form-group">
+                                            <label for="InputOldPassword">OldPassword</label>
+                                            <input type="text" class="form-control" name="UserPassword.OldPassword" id="InputOldPassword" placeholder="OldPassword" asp-for="@Model.UserPassword.OldPassword">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputNewPassword">NewPassword</label>
+                                            <input type="text" class="form-control" name="UserPassword.NewPassword" id="InputNewPassword" placeholder="NewPassword" asp-for="@Model.UserPassword.NewPassword">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="InputConfirmPassword">ConfirmPassword</label>
+                                            <input type="text" class="form-control" name="UserPassword.ConfirmPassword" id="InputConfirmPassword" placeholder="ConfirmPassword" asp-for="@Model.UserPassword.ConfirmPassword">
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck2">
+                                            <label class="form-check-label" for="exampleCheck2">Confirm</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary btn-danger" id="submitButton2" disabled>Submit</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                        <!-- /.col-md-6 -->
+                        <!-- /.col-md-6 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+</div>
+
+<script>
+    var checkbox = document.getElementById('exampleCheck1');
+    var submitButton = document.getElementById('submitButton');
+
+    checkbox.addEventListener('click', function () {
+        if (checkbox.checked) {
+            submitButton.removeAttribute('disabled');
+        } else {
+            submitButton.setAttribute('disabled', 'disabled');
+        }
+    });
+
+
+
+    var checkbox2 = document.getElementById('exampleCheck2');
+    var submitButton2 = document.getElementById('submitButton2');
+
+    checkbox2.addEventListener('click', function () {
+        if (checkbox2.checked) {
+            submitButton2.removeAttribute('disabled');
+        } else {
+            submitButton2.setAttribute('disabled', 'disabled');
+        }
+    });
+</script>

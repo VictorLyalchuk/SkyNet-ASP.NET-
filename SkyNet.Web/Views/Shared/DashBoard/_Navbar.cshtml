@@ -1,4 +1,12 @@
-﻿<div class="wrapper">
+﻿﻿@using Microsoft.AspNetCore.Identity;
+@using SkyNet.Core.Entities.User;
+@inject UserManager<AppUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Left navbar links -->
@@ -24,13 +32,15 @@
         <ul class="navbar-nav">
             <!-- Messages Dropdown Menu -->
             <li class="nav-item mr-2">
-                <button type="button" class="btn btn-block btn-info btn-sm">Profile</button>
+                <a asp-action="Profile" asp-route-id="@user.Id" class="btn btn-block btn-info btn-sm">Profile</a>
             </li>
         </ul>
         <ul class="navbar-nav">
             <!-- Messages Dropdown Menu -->
             <li class="nav-item mr-2">
-                <button type="button" class="btn btn-block btn-info btn-sm">Logout</button>
+                <form method="post" asp-action="Logout">
+                <button type="submit" class="btn btn-block btn-info btn-sm">Logout</button>
+                </form>
             </li>
         </ul>
 

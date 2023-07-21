@@ -12,8 +12,8 @@ using SkyNet.Infrastructure.Context;
 namespace SkyNet.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230710153535_1")]
-    partial class _1
+    [Migration("20230712175135_FirstBase")]
+    partial class FirstBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

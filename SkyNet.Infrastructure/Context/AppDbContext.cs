@@ -17,10 +17,10 @@ namespace SkyNet.Infrastructure.Context
         public AppDbContext(DbContextOptions<AppDbContext>options) : base(options) { }
         public DbSet<AppUser> AppUser { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            builder.Seed();
-        }
+        //protected override void OnModelCreating(ModelBuilder builder)
+        //{
+        //    base.OnModelCreating(builder);
+        //    builder.Seed();
+        //}
     }
 }
