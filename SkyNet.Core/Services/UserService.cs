@@ -11,19 +11,26 @@ using SkyNet.Core.DTOs.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 namespace SkyNet.Core.Services
 {
-    public class UserService
+    public class UserService : DbContextOptionsBuilder
     {
+        private readonly EmailService _emailService;
+
+        private readonly IConfiguration _configuration;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMapper _mapper;
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper)
+        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, EmailService emailService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _emailService = emailService;
+            _configuration = configuration;
         }
         public async Task<ServiceResponse> LoginUserAsync(UserLoginDTO model)
         {
@@ -112,7 +119,7 @@ namespace SkyNet.Core.Services
                 };
             }
             var roles = await _userManager.GetRolesAsync(user);
-            var mappedUser = _mapper.Map<AppUser, UpdateUserDTO>(user);
+            var mappedUser = _mapper.Map<AppUser, UpdateUserPasswordDTO>(user);
             mappedUser.Role = roles[0];
             return new ServiceResponse
             {
@@ -123,6 +130,7 @@ namespace SkyNet.Core.Services
         }
         public async Task<ServiceResponse> UpdateUserAsync(UpdateUserDTO modelUser)
         {
+            //AppUser user = await _userManager.FindByEmailAsync(modelUser.Email);
             var user = await _userManager.FindByIdAsync(modelUser.ID);
             if (user == null)
             {
@@ -164,6 +172,7 @@ namespace SkyNet.Core.Services
         }
         public async Task<ServiceResponse> UpdatePasswordAsync(UpdatePasswordDTO modelPassword)
         {
+            //AppUser user = await _userManager.FindByEmailAsync(modelPassword.Email);
             var user = await _userManager.FindByIdAsync(modelPassword.ID);
             if (user == null)
             {
@@ -215,6 +224,13 @@ namespace SkyNet.Core.Services
             if (res.Succeeded)
             {
                 IdentityResult createrole = await _userManager.AddToRoleAsync(mappedUser, model.Role);
+
+                await SendConfirmationEmailAsync(mappedUser);
+
+                //string subject = "New Registration";
+                //string body = "Thank you for registering. We require that you validate your registration email to ensure that the email address you entered was correct. This protects against unwanted spam and malicious abuse.";
+                //await _emailService.SendEmail(model.Email, subject, body);
+
                 return new ServiceResponse
                 {
                     Success = true,
@@ -232,6 +248,46 @@ namespace SkyNet.Core.Services
                 Success = false,
                 Message = "Error",
                 PayLoad = errors,
+            };
+        }
+        public async Task SendConfirmationEmailAsync(AppUser appUser)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(appUser);
+            var encodedToken = Encoding.UTF8.GetBytes(token);
+            var validEmailToken = WebEncoders.Base64UrlEncode(encodedToken);
+
+            string url = $"{_configuration["HostSettings:URL"]}/Dashboard/confirmEmail?userId={appUser.Id}&token={validEmailToken}";
+
+            string emailBody = $"<h1>Thank you for registering. Confirm your email please</h1><a href='{url}'>Confirm now</a>";
+            await _emailService.SendEmail(appUser.Email!, "Email confirmation", emailBody);
+        }
+        public async Task<ServiceResponse> ConfirmEmailAsync(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "User not found",
+                };
+            }
+            var decodedToken = WebEncoders.Base64UrlDecode(token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+            var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+            if (result.Succeeded)
+            {
+                return new ServiceResponse
+                {
+                    Success = true,
+                    Message = "User successfully confirmed",
+                };
+            }
+            return new ServiceResponse
+            {
+                Success = false,
+                Message = "User not confirmed",
+                Errors = result.Errors.Select(e => e.Description)
             };
         }
     }

@@ -74,95 +74,47 @@ namespace SkyNet.Web.Controllers
             var result = await _userService.GetUserByIdAsync(Id);
             if (result.Success)
             {
-
-                if (result.PayLoad is UpdateUserDTO userDto)
-                {
-                    UpdateProfileVM profile = new UpdateProfileVM()
-                    {
-                        UserInfo = userDto,
-                        UserPassword = new UpdatePasswordDTO()
-                        {
-                            ID = userDto.ID
-                        }
-                    };
-                    return View(profile);
-                }
+                return View(result.PayLoad);
             }
             return View();
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Profile(UpdateUserDTO modelUser)
-        //{
-        //    var validator = new UpdateUserValidation();
-        //    var validationResult = await validator.ValidateAsync(modelUser);
-        //    if (validationResult.IsValid)
-        //    {
-        //        var user = await _userService.UpdateUserAsync(modelUser);
-        //        if (user.Success)
-        //        {
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        ViewBag.UpdateUserError = user.PayLoad;
-        //    }
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Profile(UpdatePasswordDTO model)
-        //{
-        //    var validator = new UpdatePasswordValidation();
-        //    var validationResult = await validator.ValidateAsync(model);
-        //    if (validationResult.IsValid)
-        //    {
-        //        var result = await _userService.UpdatePasswordAsync(model);
-        //        if (result.Success)
-        //        {
-        //            return RedirectToAction(nameof(SignIn));
-        //        }
-        //        ViewBag.UpdatePasswordError = result.PayLoad;
-        //    }
-        //    return View();
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(UpdateUserDTO model)
+        {
+            var validator = new UpdateUserValidation();
+            var validationResult = await validator.ValidateAsync(model);
+            if (validationResult.IsValid)
+            {
+                ServiceResponse user = await _userService.UpdateUserAsync(model);
+                if (user.Success)
+                {
+                    //return RedirectToAction("Profile", "DashBoard", model.ID);
+                    return RedirectToAction(nameof(GetAll));
+                }
+                ViewBag.UpdateUserError = user.PayLoad;
+            }
+            ViewBag.UpdateUserError = validationResult.Errors[0];
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Profile(UpdateProfileVM model)
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordDTO model)
         {
-            if (model.UserInfo != null)
+            var validator = new UpdatePasswordValidation();
+            var validationResult = await validator.ValidateAsync(model);
+            if (validationResult.IsValid)
             {
-                var validator = new UpdateUserValidation();
-                var validationResult = await validator.ValidateAsync(model.UserInfo);
-                if (validationResult.IsValid)
+                ServiceResponse result = await _userService.UpdatePasswordAsync(model);
+                if (result.Success)
                 {
-                    ServiceResponse user = await _userService.UpdateUserAsync(model.UserInfo);
-                    if (user.Success)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    ViewBag.UpdateUserError = user.PayLoad;
+                    return RedirectToAction(nameof(SignIn));
                 }
-                ViewBag.UpdateUserError = validationResult.Errors[0];
-                return View();
+                ViewBag.UpdatePasswordError = result.PayLoad;
             }
-            if (model.UserPassword != null)
-            {
-                var validator = new UpdatePasswordValidation();
-                var validationResult = await validator.ValidateAsync(model.UserPassword);
-                if (validationResult.IsValid)
-                {
-                    ServiceResponse result = await _userService.UpdatePasswordAsync(model.UserPassword);
-                    if (result.Success)
-                    {
-                        return RedirectToAction(nameof(SignIn));
-                    }
-                    ViewBag.UpdatePasswordError = result.PayLoad;
-                }
-                ViewBag.UpdatePasswordError = validationResult.Errors[0];
-                return RedirectToAction("Profile", "DashBoard", model.UserPassword.ID);
-            }
+            ViewBag.UpdatePasswordError = validationResult.Errors[0];
             return View();
         }
         public  IActionResult Create()
@@ -188,6 +140,15 @@ namespace SkyNet.Web.Controllers
             ViewBag.UpdateCreateError = validationResult.Errors[0];
             return View();
         }
-
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            var result = await _userService.ConfirmEmailAsync(userId, token);
+            if (result.Success)
+            {
+                return Redirect(nameof(SignIn));
+            }
+            return Redirect(nameof(SignIn));
+        }
     }
 }

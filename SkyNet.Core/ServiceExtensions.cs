@@ -14,6 +14,7 @@ namespace SkyNet.Core
         public static void AddCoreServices(this IServiceCollection service)
         {
             service.AddTransient<UserService>();
+            service.AddTransient<EmailService>();
         }
         public static void AddMapping(this IServiceCollection services)
         {

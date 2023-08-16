@@ -30,6 +30,11 @@ namespace SkyNet.Infrastructure.Initizalizers
                         {
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
+                        },
+                        new IdentityRole()
+                        {
+                        Name = "User",
+                        NormalizedName = "USER"
                         }
                     );
                     AppUser admin = new AppUser()

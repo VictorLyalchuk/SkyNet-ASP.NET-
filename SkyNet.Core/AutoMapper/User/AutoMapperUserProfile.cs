@@ -17,6 +17,7 @@ namespace SkyNet.Core.AutoMapper.User
         {
             CreateMap<UsersDTO, AppUser>().ReverseMap();
             CreateMap<UpdateUserDTO, AppUser>().ReverseMap();
+            CreateMap<UpdateUserPasswordDTO, AppUser>().ReverseMap();
             CreateMap<CreateUserDTO, AppUser>().ForMember(dest => dest.Id, opt => opt.Ignore()).ReverseMap();
         }
     }
