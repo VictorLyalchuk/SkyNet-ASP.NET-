@@ -205,7 +205,7 @@ namespace SkyNet.Core.Services
                 PayLoad = errors,
             };
         }
-        public async Task<ServiceResponse> CreateUser(CreateUserDTO model)
+        public async Task<ServiceResponse> CreateUserAsync(CreateUserDTO model)
         {
             AppUser existUser = await _userManager.FindByEmailAsync(model.Email);
             if (existUser != null)
@@ -223,7 +223,7 @@ namespace SkyNet.Core.Services
 
             if (res.Succeeded)
             {
-                IdentityResult createrole = await _userManager.AddToRoleAsync(mappedUser, model.Role);
+                await _userManager.AddToRoleAsync(mappedUser, model.Role);
 
                 await SendConfirmationEmailAsync(mappedUser);
 
@@ -264,7 +264,7 @@ namespace SkyNet.Core.Services
         public async Task<ServiceResponse> ConfirmEmailAsync(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if(user == null)
+            if (user == null)
             {
                 return new ServiceResponse
                 {
@@ -288,6 +288,34 @@ namespace SkyNet.Core.Services
                 Success = false,
                 Message = "User not confirmed",
                 Errors = result.Errors.Select(e => e.Description)
+            };
+        }
+        public async Task<ServiceResponse> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "User not found",
+                };
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Encoding.UTF8.GetBytes(token);
+            var validEmailToken = WebEncoders.Base64UrlEncode(encodedToken);
+
+            string url = $"{_configuration["HostSettings:URL"]}/Dashboard/ResetPassword?email={email}&token={validEmailToken}";
+
+            string emailBody = $"<h1>Confirm instruction for reset your password</h1><a href='{url}'>Reset password</a>";
+            await _emailService.SendEmail(email, "Reset password for SkyNet", emailBody);
+
+
+            return new ServiceResponse
+            {
+                Success = true,
+                Message = "Email sent successfully",
             };
         }
     }

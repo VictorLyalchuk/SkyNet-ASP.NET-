@@ -74,11 +74,11 @@ namespace SkyNet.Web.Controllers
             var result = await _userService.GetUserByIdAsync(Id);
             if (result.Success)
             {
+
                 return View(result.PayLoad);
             }
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(UpdateUserDTO model)
@@ -129,13 +129,11 @@ namespace SkyNet.Web.Controllers
             var validationResult = await validator.ValidateAsync(model);
             if (validationResult.IsValid)
             {
-                ServiceResponse res = await _userService.CreateUser(model);
+                ServiceResponse res = await _userService.CreateUserAsync(model);
                 if (res.Success == true)
                 {
-                    ViewBag.UpdateCreateError = validationResult.Errors[0];
                     return RedirectToAction(nameof(GetAll));
                 }
-
             }
             ViewBag.UpdateCreateError = validationResult.Errors[0];
             return View();
@@ -149,6 +147,38 @@ namespace SkyNet.Web.Controllers
                 return Redirect(nameof(SignIn));
             }
             return Redirect(nameof(SignIn));
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword()
+        {
+            return View();
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var result = await _userService.ForgotPasswordAsync(email);
+            if (result.Success)
+            {
+                ViewBag.AuthError = "Check your email.";
+                return View(nameof(SignIn));
+            }
+            ViewBag.AuthError = "Sonething went wrong.";
+            return View();
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string email, string token)
+        {
+            ViewBag.Email = email;
+            ViewBag.Token = token;
+            return View(email, token);
+        }
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword()
+        {
+            return View();
         }
     }
 }
