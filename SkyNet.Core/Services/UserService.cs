@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkyNet.Core.Services
 {
@@ -224,9 +225,7 @@ namespace SkyNet.Core.Services
             if (res.Succeeded)
             {
                 await _userManager.AddToRoleAsync(mappedUser, model.Role);
-
                 await SendConfirmationEmailAsync(mappedUser);
-
                 //string subject = "New Registration";
                 //string body = "Thank you for registering. We require that you validate your registration email to ensure that the email address you entered was correct. This protects against unwanted spam and malicious abuse.";
                 //await _emailService.SendEmail(model.Email, subject, body);
@@ -238,6 +237,40 @@ namespace SkyNet.Core.Services
                 };
             }
             List<IdentityError> errorList = res.Errors.ToList();
+            string errors = "";
+            foreach (var error in errorList)
+            {
+                errors = errors + error.Description.ToList();
+            }
+            return new ServiceResponse
+            {
+                Success = false,
+                Message = "Error",
+                PayLoad = errors,
+            };
+        }
+        public async Task<ServiceResponse> DeleteUserAsync(DeleteUserDTO user)
+        {
+            var existsuser = await _userManager.FindByIdAsync(user.ID);
+            if (existsuser == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "User not found",
+                };
+            }
+            var result = await _userManager.DeleteAsync(existsuser);
+
+            if (result.Succeeded)
+            {
+                return new ServiceResponse
+                {
+                    Success = true,
+                    Message = "User deleted"
+                };
+            }
+            List<IdentityError> errorList = result.Errors.ToList();
             string errors = "";
             foreach (var error in errorList)
             {

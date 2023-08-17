@@ -12,6 +12,7 @@ using System.Security.Claims;
 using Microsoft.AspNet.Identity;
 using IdentityResult = Microsoft.AspNet.Identity.IdentityResult;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace SkyNet.Web.Controllers
 {
@@ -136,6 +137,17 @@ namespace SkyNet.Web.Controllers
                 }
             }
             ViewBag.UpdateCreateError = validationResult.Errors[0];
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(DeleteUserDTO model)
+        {
+            var result = await _userService.DeleteUserAsync(model);
+            if (result.Success)
+            {
+                return RedirectToAction(nameof(GetAll));
+            }
             return View();
         }
         [AllowAnonymous]
