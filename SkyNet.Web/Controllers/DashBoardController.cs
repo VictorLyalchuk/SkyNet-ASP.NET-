@@ -99,7 +99,6 @@ namespace SkyNet.Web.Controllers
             ViewBag.UpdateUserError = validationResult.Errors[0];
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordDTO model)
@@ -175,21 +174,28 @@ namespace SkyNet.Web.Controllers
                 ViewBag.AuthError = "Check your email.";
                 return View(nameof(SignIn));
             }
-            ViewBag.AuthError = "Sonething went wrong.";
+            ViewBag.AuthError = "Something went wrong.";
             return View();
         }
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string email, string token)
         {
-            ViewBag.Email = email;
-            ViewBag.Token = token;
-            return View(email, token);
+            ViewData["Email"] = email;
+            ViewData["Token"] = token;
+            return View();
         }
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> ResetPassword()
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
         {
+            var result = await _userService.ResetPasswordAsync(model);
+            if (result.Success)
+            {
+                ViewBag.AuthError = "Check your email.";
+                return View(nameof(ResetPassword));
+            }
+            ViewBag.AuthError = "Something went wrong.";
             return View();
         }
     }

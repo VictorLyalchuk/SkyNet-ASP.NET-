@@ -351,5 +351,36 @@ namespace SkyNet.Core.Services
                 Message = "Email sent successfully",
             };
         }
+        public async Task<ServiceResponse> ResetPasswordAsync(ResetPasswordDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "User not found",
+                };
+            }
+            var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+            var result = await _userManager.ResetPasswordAsync(user, normalToken, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return new ServiceResponse
+                {
+                    Success = true,
+                    Message = "Password reset successfully",
+                };
+            }
+
+            return new ServiceResponse
+            {
+                Success = false,
+                Message = "Password not reset",
+                Errors = result.Errors.Select(e => e.Description)
+            };
+
+        }
     }
 }
