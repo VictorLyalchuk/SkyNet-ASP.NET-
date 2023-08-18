@@ -75,7 +75,6 @@ namespace SkyNet.Web.Controllers
             var result = await _userService.GetUserByIdAsync(Id);
             if (result.Success)
             {
-
                 return View(result.PayLoad);
             }
             return View();
@@ -161,11 +160,6 @@ namespace SkyNet.Web.Controllers
             return Redirect(nameof(SignIn));
         }
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword()
-        {
-            return View();
-        }
-        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email)
         {
@@ -198,6 +192,40 @@ namespace SkyNet.Web.Controllers
             }
             ViewBag.AuthError = result.Errors;
             return View(nameof(SignIn));
+        }
+        public async Task<IActionResult> Edit(string id)
+        {
+            await LoadRoles();
+            var result = await _userService.GetUserByIdAsync(id);
+            if (result.Success)
+            {
+                return View(result.PayLoad);
+            }
+            return View();
+        }
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateUserDTO model)
+        {
+            await LoadRoles();
+            var result = await _userService.GetUserByIdAsync(model.ID);
+
+            var validator = new UpdateUserValidation();
+            var validationResult = await validator.ValidateAsync(model);
+            if (validationResult.IsValid)
+            {
+                await _userService.EditUserAsync(model);
+            }
+            if (result.Success)
+            {
+                return RedirectToAction(nameof(GetAll));
+            }
+            return View();
+        }
+        private async Task LoadRoles()
+        {
+            var result = await _userService.GetRolesAsync();
+            ViewBag.RoleList = result;
         }
     }
 }

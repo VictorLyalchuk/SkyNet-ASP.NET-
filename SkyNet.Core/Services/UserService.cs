@@ -14,24 +14,26 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Data;
 
 namespace SkyNet.Core.Services
 {
     public class UserService : DbContextOptionsBuilder
     {
-        private readonly EmailService _emailService;
-
         private readonly IConfiguration _configuration;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly EmailService _emailService;
+        private readonly RoleManager<IdentityRole> _rolemanager;
         private readonly IMapper _mapper;
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, EmailService emailService, IConfiguration configuration)
+        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, EmailService emailService, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
             _emailService = emailService;
             _configuration = configuration;
+            _rolemanager = roleManager;
         }
         public async Task<ServiceResponse> LoginUserAsync(UserLoginDTO model)
         {
@@ -131,7 +133,6 @@ namespace SkyNet.Core.Services
         }
         public async Task<ServiceResponse> UpdateUserAsync(UpdateUserDTO modelUser)
         {
-            //AppUser user = await _userManager.FindByEmailAsync(modelUser.Email);
             var user = await _userManager.FindByIdAsync(modelUser.ID);
             if (user == null)
             {
@@ -173,7 +174,6 @@ namespace SkyNet.Core.Services
         }
         public async Task<ServiceResponse> UpdatePasswordAsync(UpdatePasswordDTO modelPassword)
         {
-            //AppUser user = await _userManager.FindByEmailAsync(modelPassword.Email);
             var user = await _userManager.FindByIdAsync(modelPassword.ID);
             if (user == null)
             {
@@ -381,6 +381,58 @@ namespace SkyNet.Core.Services
                 Errors = result.Errors.Select(e => e.Description)
             };
 
+        }
+        public async Task<List<IdentityRole>> GetRolesAsync()
+        {
+            List<IdentityRole> roles = await _rolemanager.Roles.ToListAsync();
+            return roles;
+        }
+        public async Task<ServiceResponse> EditUserAsync(UpdateUserDTO modelUser)
+        {
+            var user = await _userManager.FindByIdAsync(modelUser.ID);
+            if (user == null)
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "User not found",
+                };
+            }
+            if (user.Email != modelUser.Email)
+            {
+                user.EmailConfirmed = false;
+                user.Email = modelUser.Email;
+                await SendConfirmationEmailAsync(user);
+                await _userManager.UpdateAsync(user);
+            }
+            AppUser updatedUser = _mapper.Map<AppUser>(user);
+            updatedUser.UserName = modelUser.Email;
+
+            updatedUser.FirstName = modelUser.FirstName;
+            updatedUser.LastName = modelUser.LastName;
+            updatedUser.PhoneNumber = modelUser.PhoneNumber;
+
+            var oldrole = await _userManager.GetRolesAsync(updatedUser);
+            await _userManager.RemoveFromRolesAsync(user, oldrole);
+            await _userManager.AddToRoleAsync(user, modelUser.Role);
+
+            var result = await _userManager.UpdateAsync(updatedUser);
+            if (result.Succeeded)
+            {
+                return new ServiceResponse
+                {
+                    Success = true,
+                    Message = "User seccessfully updated",
+                };
+            }
+            else
+            {
+                return new ServiceResponse
+                {
+                    Success = false,
+                    Message = "Error user updated",
+                };
+            }
         }
     }
 }
