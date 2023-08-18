@@ -60,7 +60,8 @@
                                 <p>All users</p>
                             </a>
                         </li>
-                        @if (UserManager.IsInRoleAsync(user, "Administrator").Result)
+@*                        @if (UserManager.IsInRoleAsync(user, "Administrator").Result)*@
+                        @if (@User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
                                 <a asp-action="Create" class="nav-link">

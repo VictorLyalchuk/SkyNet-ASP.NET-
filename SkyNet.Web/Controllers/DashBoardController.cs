@@ -147,6 +147,7 @@ namespace SkyNet.Web.Controllers
             {
                 return RedirectToAction(nameof(GetAll));
             }
+            ViewBag.AuthError = result.Errors;
             return View();
         }
         [AllowAnonymous]
@@ -192,11 +193,11 @@ namespace SkyNet.Web.Controllers
             var result = await _userService.ResetPasswordAsync(model);
             if (result.Success)
             {
-                ViewBag.AuthError = "Check your email.";
+                ViewBag.AuthError = result.Message;
                 return View(nameof(ResetPassword));
             }
-            ViewBag.AuthError = "Something went wrong.";
-            return View();
+            ViewBag.AuthError = result.Errors;
+            return View(nameof(SignIn));
         }
     }
 }
