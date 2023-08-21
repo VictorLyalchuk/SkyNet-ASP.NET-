@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SkyNet.Core.Entities.User;
+using SkyNet.Core.Interfaces;
 using SkyNet.Infrastructure.Context;
 using SkyNet.Infrastructure.Initizalizers;
+using SkyNet.Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +44,9 @@ namespace SkyNet.Infrastructure
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
         }
-
+        public static void AddRepositories(this IServiceCollection service)
+        {
+            service.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        }
     }
 }

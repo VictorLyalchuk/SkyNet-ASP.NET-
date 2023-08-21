@@ -21,6 +21,9 @@ builder.Services.AddCoreServices();
 //Add Mapping 
 builder.Services.AddMapping();
 
+//add repositories
+builder.Services.AddRepositories();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

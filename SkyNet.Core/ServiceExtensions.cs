@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SkyNet.Core.AutoMapper.Categories;
 using SkyNet.Core.AutoMapper.User;
 using SkyNet.Core.Services;
 using System;
@@ -19,6 +20,7 @@ namespace SkyNet.Core
         public static void AddMapping(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(AutoMapperUserProfile));
+            services.AddAutoMapper(typeof(AutoMapperCategoryProfile));
         }
     }
 }

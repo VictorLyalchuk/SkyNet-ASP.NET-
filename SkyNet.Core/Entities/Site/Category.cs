@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkyNet.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SkyNet.Core.Entities.Site
 {
-    public class Category
+    public class Category : IEntity
     {
         public int ID { get; set; }
         [Required, MaxLength(100)]
