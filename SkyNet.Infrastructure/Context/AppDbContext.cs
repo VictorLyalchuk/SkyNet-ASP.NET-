@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SkyNet.Core.Entities.User;
 using SkyNet.Infrastructure.Initizalizers;
 using System.Data;
+using SkyNet.Infrastructure.Entities;
 
 namespace SkyNet.Infrastructure.Context
 {
@@ -16,11 +17,15 @@ namespace SkyNet.Infrastructure.Context
         public AppDbContext() : base() { }
         public AppDbContext(DbContextOptions<AppDbContext>options) : base(options) { }
         public DbSet<AppUser> AppUser { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.SeedCategories();
+            builder.SeedPosts();
 
-        //protected override void OnModelCreating(ModelBuilder builder)
-        //{
-        //    base.OnModelCreating(builder);
-        //    builder.Seed();
-        //}
+            builder.Entity<Post>().HasOne(c => c._Category).WithMany(p => p._Posts).HasForeignKey(c => c.CategoryId);
+        }
     }
 }
