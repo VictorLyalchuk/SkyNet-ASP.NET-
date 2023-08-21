@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkyNet.Infrastructure.Entities
+namespace SkyNet.Core.Entities.Site
 {
     public class Post
     {

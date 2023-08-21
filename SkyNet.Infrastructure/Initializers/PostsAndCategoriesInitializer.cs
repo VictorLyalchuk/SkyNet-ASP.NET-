@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using SkyNet.Infrastructure.Entities;
+using SkyNet.Core.Entities.Site;
 using System;
 using System.Collections.Generic;
 using System.Linq;

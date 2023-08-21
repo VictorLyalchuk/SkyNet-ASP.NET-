@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using SkyNet.Core.Entities.User;
 using SkyNet.Infrastructure.Initizalizers;
 using System.Data;
-using SkyNet.Infrastructure.Entities;
+using SkyNet.Core.Entities.Site;
 
 namespace SkyNet.Infrastructure.Context
 {
