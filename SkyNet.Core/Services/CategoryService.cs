@@ -19,10 +19,34 @@ namespace SkyNet.Core.Services
             _mapper = mapper;
             _categoryRepository = categoryRepository;
         }
+        public async Task Create(CategoryDTO model)
+        {
+            await _categoryRepository.Insert(_mapper.Map<Category>(model));
+            await _categoryRepository.Save();
+        }
+        public async Task Delete(int id)
+        {
+            var model = await Get(id);
+            if (model == null) return;
+            await _categoryRepository.Delete(id);
+            await _categoryRepository.Save();
+        }
+        public async Task<CategoryDTO?> Get(int id)
+        {
+            if (id < 0) return null;
+            var category = await _categoryRepository.GetByID(id);
+            if (category == null) return null;
+            return _mapper.Map<CategoryDTO?>(category);
+        }
         public async Task<List<CategoryDTO>> GetAll()
         {
             var result = await _categoryRepository.GetAll();
             return _mapper.Map<List<CategoryDTO>>(result);
+        }
+        public async Task Update(CategoryDTO model)
+        {
+            await _categoryRepository.Update(_mapper.Map<Category>(model));
+            await _categoryRepository.Save();
         }
     }
 }

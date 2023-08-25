@@ -116,7 +116,7 @@ namespace SkyNet.Web.Controllers
             ViewBag.UpdatePasswordError = validationResult.Errors[0];
             return View();
         }
-        public  IActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -227,5 +227,6 @@ namespace SkyNet.Web.Controllers
             var result = await _userService.GetRolesAsync();
             ViewBag.RoleList = result;
         }
+
     }
 }

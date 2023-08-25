@@ -1,8 +1,12 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity;
+@using SkyNet.Core.DTOs.Category;
 @using SkyNet.Core.DTOs.User;
 @using SkyNet.Core.Entities.User;
-@model UpdateUserPasswordDTO;
-
+@model CategoryDTO;
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
 ﻿<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -15,7 +19,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a asp-action="Index">Home</a></li>
-                        <li class="breadcrumb-item active">Create user</li>
+                        <li class="breadcrumb-item active">Edit category</li>
                     </ol>
                 </div>
             </div>
@@ -28,7 +32,7 @@
             <!-- SELECT2 EXAMPLE -->
             <div class="card card-default">
                 <div class="card-header">
-                    <h3 class="card-title">Edit user</h3>
+                    <h3 class="card-title">Edit category</h3>
 
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -45,7 +49,7 @@
                         <div class="col-md-5 offset-3">
                             <div class="card card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Edit user</h3>
+                                    <h3 class="card-title">Edit category</h3>
                                 </div>
                                 <!-- /.card-header -->
                                 <!-- form start -->
@@ -53,28 +57,13 @@
                                 {
                                     <span class="text-danger mt-3 ml-3">@ViewBag.UpdateCreateError</span>
                                 }
-                                <form method="post" asp-action="Edit" asp-controller="DashBoard">
+                                <form asp-controller="Categories" asp-action="EditCategory" method="post">
                                     <div class="card-body">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">First name</label>
-                                            <input type="text" class="form-control" name="FirstName" id="InputFirstName" placeholder="First Name" asp-for="@Model.FirstName">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Last name</label>
-                                            <input type="text" class="form-control" name="LastName" id="InputLastName" placeholder="Last Name" asp-for="@Model.LastName">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Email address</label>
-                                            <input type="email" class="form-control" name="Email" id="InputEmail1" placeholder="Enter email" asp-for="@Model.Email">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Role</label>
-                                            <select class="form-control select2" name="Role" style="width: 100%;" id="InputRole" asp-for="@Model.Role">
-                                                @foreach (var _user in ViewBag.RoleList)
-                                                {
-                                                    <option>@_user</option>
-                                                }
-                                            </select>
+                                            <label for="exampleInputEmail1">Category name</label>
+                                            <input type="text" class="form-control" name="Name" id="InputName" placeholder="Name" asp-for="@Model.Name">
+                                            <input type="hidden" name="ID" asp-for="@Model.ID" />
+
                                         </div>
                                     </div>
                                     <!-- /.card-body -->

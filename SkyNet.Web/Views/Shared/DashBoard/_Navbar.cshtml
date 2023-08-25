@@ -32,13 +32,13 @@
         <ul class="navbar-nav">
             <!-- Messages Dropdown Menu -->
             <li class="nav-item mr-2">
-                <a asp-action="Profile" asp-route-id="@user.Id" class="btn btn-block btn-info btn-sm">Profile</a>
+                <a asp-controller="Dashboard" asp-action="Profile" asp-route-id="@user.Id" class="btn btn-block btn-info btn-sm">Profile</a>
             </li>
         </ul>
         <ul class="navbar-nav">
             <!-- Messages Dropdown Menu -->
             <li class="nav-item mr-2">
-                <form method="post" asp-action="Logout">
+                <form asp-controller="Dashboard" asp-action="Logout" method="post">
                 <button type="submit" class="btn btn-block btn-info btn-sm">Logout</button>
                 </form>
             </li>

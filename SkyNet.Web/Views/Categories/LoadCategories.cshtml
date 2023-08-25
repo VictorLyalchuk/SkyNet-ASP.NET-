@@ -1,7 +1,8 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity;
+@using SkyNet.Core.DTOs.Category;
 @using SkyNet.Core.DTOs.User;
 @using SkyNet.Core.Entities.User;
-@model List<UsersDTO>
+@model List<CategoryDTO>
 @inject UserManager<AppUser> UserManager
 
 @{
@@ -14,11 +15,16 @@
     <link rel="stylesheet" href="~/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 }
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
 <style>
     .default-width-120 {
         width: 120px;
     }
 </style>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -26,12 +32,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>All users</h1>
+                    <h1>All categories</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Users</li>
+                        <li class="breadcrumb-item active">Categories</li>
                     </ol>
                 </div>
             </div>
@@ -45,19 +51,15 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">User list with minimal information</h3>
+                            <h3 class="card-title">Categories with minimal information</h3>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             <table id="example2" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>First name</th>
-                                        <th>Last name</th>
-                                        <th>Email</th>
-                                        <th>Email confirmed</th>
-                                        <th>Lockout</th>
-                                        <th>Role</th>
+                                        <th class="default-width-120">ID</th>
+                                        <th>Name</th>
                                         @if (@User.IsInRole("Administrator"))
                                         {
                                             <th class="default-width-120">Edit</th>
@@ -66,24 +68,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var _user in Model)
+                                    @foreach (var category in Model)
                                     {
                                         <tr>
-                                            <td>@_user.FirstName</td>
-                                            <td>@_user.LastName</td>
-                                            <td>@_user.Email</td>
-                                            <td>@_user.EmailConfirmed</td>
-                                            <td>@_user.LockedOut</td>
-                                            <td> @_user.Role</td>
-                                            @if (@User.IsInRole("Administrator") && _user.Email != email)
+                                            <td>@category.ID</td>
+                                            <td>@category.Name</td>
+                                            @if (@User.IsInRole("Administrator"))
                                             {
-                                                <td><a asp-controller="Dashboard" asp-action="Edit" asp-route-id="@_user.ID" class="btn btn-block btn-warning btn-sm" style="color:white">Edit</a></td>
 
+                                                <td><a asp-controller="Categories" asp-action="EditCategory" asp-route-id="@category.ID" class="btn btn-block btn-warning btn-sm" style="color:white">Edit</a></td>
                                                 <td>
-                                                    <form id="deleteForm" asp-controller="Dashboard" asp-action="Delete" method="post">
-                                                        <input type="hidden" name="ID" value="@_user.ID" />
+                                                    <form id="deleteForm-@category.ID" asp-controller="Categories" asp-action="DeleteCategories" method="post">
+                                                        <input type="hidden" name="ID" value="@category.ID" />
                                                     </form>
-                                                    <a href="javascript:void(0);" onclick="deleteConfirmation();" class="btn btn-block btn-danger btn-sm" style="text-decoration: none;">Delete</a>
+                                                    <a href="javascript:void(0);" onclick="deleteConfirmationCategory('@category.ID');" class="btn btn-block btn-danger btn-sm" style="text-decoration: none;">Delete</a>
                                                 </td>
                                             }
                                         </tr>
@@ -104,10 +102,10 @@
 </div>
 <!-- /.content -->
 <script>
-    function deleteConfirmation() {
-        var confirmed = confirm("Are you sure you want to delete this user?");
+    function deleteConfirmationCategory(categoryId) {
+        var confirmed = confirm("Are you sure you want to delete this category?");
         if (confirmed) {
-        document.getElementById("deleteForm").submit();
+            document.getElementById("deleteForm-" + categoryId).submit();
         }
     }
 </script>

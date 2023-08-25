@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkyNet.Core.AutoMapper.Categories;
 using SkyNet.Core.AutoMapper.User;
+using SkyNet.Core.Interfaces;
 using SkyNet.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace SkyNet.Core
         {
             service.AddTransient<UserService>();
             service.AddTransient<EmailService>();
+            service.AddScoped<ICategoryService, CategoryService>();
         }
         public static void AddMapping(this IServiceCollection services)
         {

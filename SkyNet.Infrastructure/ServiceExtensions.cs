@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SkyNet.Core.Entities.User;
 using SkyNet.Core.Interfaces;
+using SkyNet.Core.Services;
 using SkyNet.Infrastructure.Context;
 using SkyNet.Infrastructure.Initizalizers;
 using SkyNet.Infrastructure.Repository;
